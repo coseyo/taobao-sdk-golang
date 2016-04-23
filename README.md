@@ -22,3 +22,6 @@
 
 */
 ```
+
+### 运行
+> make build && make run
