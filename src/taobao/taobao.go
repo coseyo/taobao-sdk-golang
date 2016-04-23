@@ -1,7 +1,23 @@
 package taobao
 
+/**
+ * 淘宝SDK，go语言实现版
+ * 用法示例 :
+ */ /*
+
+	var reqParams map[string]string
+	reqParams = make(map[string]string)
+	reqParams["fields"] = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url"
+	reqParams["num_iids"] = "6535538417,39442448794,6956495372,,45587889166"
+
+	sdk := taobao.NewSDK()
+	result := sdk.Execute(Address, reqParams)
+
+	fmt.Println("\nresult ==> \n", result)
+
+*/
+
 import (
-	// "bytes"
 	"crypto/md5"
 	"fmt"
 	"io/ioutil"
@@ -9,6 +25,7 @@ import (
 	"net/url"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -20,12 +37,12 @@ type Auth struct {
 }
 
 type Params struct {
-	// method      string // api接口名称
 	app_key     string // appKey
 	timestamp   string // 时间戳
 	format      string // 相应格式 json
 	v           string // api版本 2.0
 	sign_method string // 签名的摘要算法md5
+	// method      string // api接口名称
 	// session     string // 是否需要授权
 }
 
@@ -38,8 +55,8 @@ const (
 	SIGN_METHOD string = "md5"
 )
 
-func NewAuth(appkey string, appsecret string, REST_URL string) *Auth {
-	return &Auth{appkey: appkey, appsecret: appsecret, requrl: REST_URL}
+func NewSDK() *Auth {
+	return &Auth{appkey: APPKEY, appsecret: APPSECRET, requrl: REST_URL}
 }
 
 func (this *Auth) invoke(method string, params map[string]string, methodType string) (string, error) {
@@ -133,25 +150,24 @@ func (this *Auth) sign(params Params, fields map[string]string) string {
 	return strings.ToUpper(signedString)
 }
 
-func (this *Auth) Execute(apiname string, params map[string]string) string {
-	body, err := this.invoke(apiname, params, "POST")
+func (this *Auth) Execute(apiname string, params map[string]interface{}) string {
+
+	var paramsMap map[string]string
+	paramsMap = make(map[string]string)
+
+	for k, v := range params {
+		if s, ok := v.(string); ok {
+			paramsMap[k] = s
+		} else if _, ok := v.(int); ok {
+			paramsMap[k] = strconv.Itoa(v.(int))
+		} else {
+			panic("格式错误，map 格式只支持string, int")
+		}
+	}
+
+	body, err := this.invoke(apiname, paramsMap, "POST")
 	if err != nil {
 		panic(err)
 	}
 	return body
 }
-
-// func main() {
-// 	auth := NewAuth(APPKEY, APPSECRET, REST_URL)
-// 	var reqParams map[string]string
-// 	reqParams = make(map[string]string)
-// 	reqParams["fields"] = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url"
-// 	result := auth.Execute("taobao.tbk.item.get", reqParams)
-
-// 	reqParams["fields"] = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url"
-// 	reqParams["num_iids"] = "6535538417,39442448794,6956495372,,45587889166"
-// 	result2 := auth.Execute("taobao.tbk.item.info.get", reqParams)
-
-// 	fmt.Println("\nresult ==> \n", result)
-// 	fmt.Println("\nresult2 ==> \n", result2)
-// }

@@ -5,27 +5,32 @@ import (
 	"taobao"
 )
 
-const (
-	APPKEY      string = "23349763"
-	APPSECRET   string = "531b017cbac1b5555ac2b1ddcc869c89"
-	REST_URL    string = "http://gw.api.taobao.com/router/rest"
-	FORMAT      string = "json"
-	V           string = "2.0"
-	SIGN_METHOD string = "md5"
-)
-
 func main() {
-	auth := taobao.NewAuth(APPKEY, APPSECRET, REST_URL)
-	var reqParams map[string]string
-	reqParams = make(map[string]string)
+
+	var reqParams map[string]interface{}
+	reqParams = make(map[string]interface{})
 	reqParams["fields"] = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url"
 
-	result := auth.Execute("taobao.tbk.item.get", reqParams)
+	sdk := taobao.NewSDK()
+	result := sdk.Execute("taobao.tbk.item.get", reqParams)
 	fmt.Println("\nresult ==> \n", result)
 
-	reqParams["fields"] = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url"
-	reqParams["num_iids"] = "6535538417,39442448794,6956495372,,45587889166"
-	result2 := auth.Execute("taobao.tbk.item.info.get", reqParams)
+	var reqParams2 map[string]interface{}
+	reqParams2 = make(map[string]interface{})
+	reqParams2["fields"] = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url"
+	reqParams2["num_iids"] = "6535538417,39442448794,6956495372,,45587889166"
+
+	result2 := sdk.Execute("taobao.tbk.item.info.get", reqParams2)
 
 	fmt.Println("\nresult2 ==> \n", result2)
+
+	var reqParams3 map[string]interface{}
+	reqParams3 = make(map[string]interface{})
+	reqParams3["fields"] = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url"
+	reqParams3["relate_type"] = 1
+	reqParams3["num_iid"] = 6535538417
+
+	result3 := sdk.Execute("taobao.tbk.item.recommend.get", reqParams3)
+
+	fmt.Println("\nresult3 ==> \n", result3)
 }
