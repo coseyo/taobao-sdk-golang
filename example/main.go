@@ -1,15 +1,12 @@
-# taobao-sdk-golang
+package main
 
-### 注意
-请替换自己的appkey、appsecret
+import (
+	"log"
 
-### 用法示例见example/main.go文件
-```
-/**
- * 淘宝SDK，go语言实现版
- * 用法示例 :
- */ /*
+	"github.com/coseyo/taobao-sdk-golang/taobao"
+)
 
+func main() {
 	var reqParams map[string]interface{}
 	reqParams = make(map[string]interface{})
 	reqParams["platform"] = 1
@@ -22,5 +19,4 @@
 	log.Println("err", err)
 	log.Println("respMap", respMap)
 
-*/
-```
+}
