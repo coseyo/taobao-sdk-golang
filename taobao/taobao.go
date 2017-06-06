@@ -76,6 +76,9 @@ func (this *Auth) request(params map[string]string, methodType string) (respMap 
 	defer resp.Body.Close()
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 	err = json.Unmarshal(bodyBytes, &respMap)
+	if err != nil {
+		err = errors.New(fmt.Sprintf("%s %s", err.Error(), string(bodyBytes)))
+	}
 	return
 }
 
